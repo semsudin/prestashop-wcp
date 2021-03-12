@@ -3,7 +3,7 @@
  * Shop System Plugins - Terms of Use
  *
  * The plugins offered are provided free of charge by Wirecard Central Eastern Europe GmbH 
- * (abbreviated to Wirecard CEE) and are explicitly not part of the Wirecard CEE range of 
+ * (abbreviated to Qenta CEE) and are explicitly not part of the Qenta CEE range of 
  * products and services.
  *
  * They have been tested and approved for full functionality in the standard configuration
@@ -11,15 +11,15 @@
  * License Version 2 (GPLv2) and can be used, developed and passed on to third parties under
  * the same terms.
  *
- * However, Wirecard CEE does not provide any guarantee or accept any liability for any errors
+ * However, Qenta CEE does not provide any guarantee or accept any liability for any errors
  * occurring when used in an enhanced, customized shop system configuration.
  *
  * Operation in an enhanced, customized configuration is at your own risk and requires a
  * comprehensive test phase by the user of the plugin.
  *
- * Customers use the plugins at their own risk. Wirecard CEE does not guarantee their full
- * functionality neither does Wirecard CEE assume liability for any disadvantages related to
- * the use of the plugins. Additionally, Wirecard CEE does not guarantee the full functionality
+ * Customers use the plugins at their own risk. Qenta CEE does not guarantee their full
+ * functionality neither does Qenta CEE assume liability for any disadvantages related to
+ * the use of the plugins. Additionally, Qenta CEE does not guarantee the full functionality
  * for customized shop systems or installed plugins of other vendors of plugins within the same
  * shop system.
  *
@@ -53,6 +53,15 @@ class WirecardCEECheckoutPagePaymentIFrameModuleFrontController extends ModuleFr
 
         unset($this->context->cookie->qpayRedirectUrl);
 
-        $this->setTemplate('payment_iframe.tpl');
+        //$this->setTemplate(LyraTools::getTemplatePath('iframe/loader.tpl'));
+
+        $tpl = 'payment_iframe.tpl';
+        if (version_compare(_PS_VERSION_, '1.7', '>=')) {
+            $tpl =  'module:wirecardceecheckoutpage/views/templates/front/' . $tpl;
+        }
+        $this->setTemplate($tpl);
     }
+
+
+    
 }

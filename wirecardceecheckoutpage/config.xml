@@ -4,7 +4,7 @@
             <displayName><![CDATA[Wirecard Checkout Page]]></displayName>
             <version><![CDATA[1.5.1]]></version>
             <description><![CDATA[Wirecard Checkout Page payment module]]></description>
-            <author><![CDATA[Wirecard CEE]]></author>
+            <author><![CDATA[Qenta CEE]]></author>
             <tab><![CDATA[payments_gateways]]></tab>
             <confirmUninstall>Are you sure you want to delete these details?</confirmUninstall>
             <is_configurable>1</is_configurable>

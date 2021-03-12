@@ -3,7 +3,7 @@
  * Shop System Plugins - Terms of Use
  *
  * The plugins offered are provided free of charge by Wirecard Central Eastern Europe GmbH 
- * (abbreviated to Wirecard CEE) and are explicitly not part of the Wirecard CEE range of 
+ * (abbreviated to Qenta CEE) and are explicitly not part of the Qenta CEE range of 
  * products and services.
  *
  * They have been tested and approved for full functionality in the standard configuration
@@ -11,15 +11,15 @@
  * License Version 2 (GPLv2) and can be used, developed and passed on to third parties under
  * the same terms.
  *
- * However, Wirecard CEE does not provide any guarantee or accept any liability for any errors
+ * However, Qenta CEE does not provide any guarantee or accept any liability for any errors
  * occurring when used in an enhanced, customized shop system configuration.
  *
  * Operation in an enhanced, customized configuration is at your own risk and requires a
  * comprehensive test phase by the user of the plugin.
  *
- * Customers use the plugins at their own risk. Wirecard CEE does not guarantee their full
- * functionality neither does Wirecard CEE assume liability for any disadvantages related to
- * the use of the plugins. Additionally, Wirecard CEE does not guarantee the full functionality
+ * Customers use the plugins at their own risk. Qenta CEE does not guarantee their full
+ * functionality neither does Qenta CEE assume liability for any disadvantages related to
+ * the use of the plugins. Additionally, Qenta CEE does not guarantee the full functionality
  * for customized shop systems or installed plugins of other vendors of plugins within the same
  * shop system.
  *
@@ -140,10 +140,13 @@ class WirecardCEECheckoutPage extends PaymentModule
 
     public function install()
     {
-        if (!parent::install()
+
+        if (version_compare(_PS_VERSION_, '1.7', '<')) {
+            if (!parent::install()
             || !$this->registerHook('payment')
             || !$this->registerHook('displayPaymentEU')
             || !$this->registerHook('paymentReturn')
+            || !$this->registerHook('paymentOptions')
             || !Configuration::updateValue(self::WCP_CONFIGURATION_MODE, self::WCP_CONFIGURATION_MODE_DEFAULT)
             || !Configuration::updateValue(self::WCP_CUSTOMER_ID, self::WCP_CUSTOMER_ID_DEMO)
             || !Configuration::updateValue(self::WCP_SHOP_ID, self::WCP_SHOP_ID_DEMO)
@@ -160,7 +163,31 @@ class WirecardCEECheckoutPage extends PaymentModule
             || !Configuration::updateValue(self::WCP_USE_IFRAME, self::WCP_USE_IFRAME_DEFAULT)
             || !$this->installPaymentTypes()
         ) {
-            return false;
+                return false;
+            }
+        }else{
+            if (!parent::install()
+            || !$this->registerHook('payment')
+            || !$this->registerHook('displayPaymentEU')
+            || !$this->registerHook('paymentOptions')
+            || !Configuration::updateValue(self::WCP_CONFIGURATION_MODE, self::WCP_CONFIGURATION_MODE_DEFAULT)
+            || !Configuration::updateValue(self::WCP_CUSTOMER_ID, self::WCP_CUSTOMER_ID_DEMO)
+            || !Configuration::updateValue(self::WCP_SHOP_ID, self::WCP_SHOP_ID_DEMO)
+            || !Configuration::updateValue(self::WCP_SECRET, self::WCP_SECRET_DEMO)
+            || !Configuration::updateValue(self::WCP_DISPLAY_TEXT, self::WCP_DISPLAY_TEXT_DEFAULT)
+            || !Configuration::updateValue(self::WCP_MAX_RETRIES, self::WCP_MAX_RETRIES_DEFAULT)
+            || !Configuration::updateValue(self::WCP_INVOICE_MIN, self::WCP_AMOUNT_DEFAULT)
+            || !Configuration::updateValue(self::WCP_INVOICE_MAX, self::WCP_AMOUNT_DEFAULT)
+            || !Configuration::updateValue(self::WCP_INSTALLMENT_MIN, self::WCP_AMOUNT_DEFAULT)
+            || !Configuration::updateValue(self::WCP_INSTALLMENT_MAX, self::WCP_AMOUNT_DEFAULT)
+            || !Configuration::updateValue(self::WCP_TRANSACTION_ID, self::WCP_TRANSACTION_ID_DEFAULT)
+            || !Configuration::updateValue(self::WCP_AUTO_DEPOSIT, self::WCP_AUTO_DEPOSIT_DEFAULT)
+            || !Configuration::updateValue(self::WCP_SEND_ADDITIONAL_DATA, self::WCP_SEND_ADDITIONAL_DATA_DEFAULT)
+            || !Configuration::updateValue(self::WCP_USE_IFRAME, self::WCP_USE_IFRAME_DEFAULT)
+            || !$this->installPaymentTypes()
+        ) {
+                return false;
+            }
         }
 
         // http://forge.prestashop.com/browse/PSCFV-1712
@@ -508,11 +535,10 @@ class WirecardCEECheckoutPage extends PaymentModule
 
     public function hookDisplayPaymentEU($params)
     {
-        $this->log("hookDisplayPaymentEU");
         if (!$this->active) {
             return;
         }
-
+        
         unset($this->context->cookie->qpayRedirectUrl);
 
         $paymentTypes = $this->getEnabledPaymentTypes($params['cart']);
@@ -547,7 +573,6 @@ class WirecardCEECheckoutPage extends PaymentModule
         if (!$this->active) {
             return;
         }
-
         require('Wirecard/CEE/QPay/Response.php');
 
         $this->setOrder((int)Tools::getValue('psOrderNumber'));
@@ -577,6 +602,7 @@ class WirecardCEECheckoutPage extends PaymentModule
             Tools::redirect($this->context->link->getPageLink('order-opc', true, $this->getOrder()->id_lang, $params));
         }
         Tools::redirect($this->context->link->getPageLink('order', true, $this->getOrder()->id_lang, $params));
+
     }
 
     public function hookDisplayPDFInvoice($params)
@@ -652,8 +678,9 @@ class WirecardCEECheckoutPage extends PaymentModule
     {
         require('Wirecard/CEE/QPay/Initiation.php');
 
+        if(isset($this->getOrder()->id_customer))
         $customer = new Customer($this->getOrder()->id_customer);
-
+        else $customer = new Customer();
         $this->validateOrder(
             $this->getCart()->id,
             $this->getAwaitingState(),
@@ -673,6 +700,7 @@ class WirecardCEECheckoutPage extends PaymentModule
         $language = $this->getLanguage();
         $pluginVersion = $this->getPluginVersion();
 
+        
         $request = new Wirecard_CEE_QPay_Initiation(
             $this->getCustomerId(),
             $this->getSecret(),
@@ -686,7 +714,7 @@ class WirecardCEECheckoutPage extends PaymentModule
             $this->getReturnUrl(),
             $this->getServiceUrl(),
             $this->getConsumerUserAgent(),
-            $this->getConsumerIpAddress()
+            $this->getConsumerIpAddress(), null
         );
 
         $request->setShopId($this->getShopId())
@@ -767,9 +795,13 @@ class WirecardCEECheckoutPage extends PaymentModule
         $consumerData->addAddressInformation($billingAddress)
             ->addAddressInformation($shippingAddress);
 
+            
         $customer = new Customer($this->getOrder()->id_customer);
-        $consumerData->setBirthDate($customer->birthday)
-            ->setEmail($customer->email);
+        
+        if (isset($customer->birthday) && $customer->birthday && $customer->birthday != "0000-00-00") {
+            $consumerData->setBirthDate($customer->birthday);
+        }
+        $consumerData->setEmail($customer->email);
 
         $request->addConsumerData($consumerData);
 
@@ -874,9 +906,17 @@ class WirecardCEECheckoutPage extends PaymentModule
             ),
             'this_path' => _THEME_CSS_DIR_
         ));
+
+       // $tpl = $this->getTemplatePath('hook/breakout_iframe.tpl');
         return $this->display(__FILE__, 'breakout_iframe.tpl');
     }
 
+    public function getTemplatePath($tpl){
+        if (version_compare(_PS_VERSION_, '1.7', '>=')) {
+            $tpl =  'module:wirecardceecheckoutpage/views/templates/hook/' . $tpl;
+        }
+        return $tpl;
+    }
     private function saveReturnedFields($response)
     {
         $msg = new Message();
@@ -910,10 +950,12 @@ class WirecardCEECheckoutPage extends PaymentModule
     private function setOrderState($state)
     {
         //Order::setCurrentState() does not save history. - it's not even used in presta itself.
-        $history = new OrderHistory();
-        $history->id_order = (int) $this->getOrder()->id;
-        $history->changeIdOrderState((int)($state), $history->id_order, true);
-        $history->addWithemail();
+        if ($this->getOrder() && isset($this->getOrder()->id)) {
+            $history = new OrderHistory();
+            $history->id_order = (int) $this->getOrder()->id;
+            $history->changeIdOrderState((int)($state), $history->id_order, true);
+            $history->addWithemail();
+        }
     }
 
     private function getEnabledPaymentTypes($cart)
@@ -1368,4 +1410,6 @@ class WirecardCEECheckoutPage extends PaymentModule
         $version = explode('.', _PS_VERSION_);
         return $version[1];
     }
+
+    
 }

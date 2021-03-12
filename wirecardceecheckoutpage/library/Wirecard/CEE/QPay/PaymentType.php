@@ -1,6 +1,6 @@
 <?php
 /*
-    Die vorliegende Software ist Eigentum von Wirecard CEE und daher vertraulich zu behandeln.
+    Die vorliegende Software ist Eigentum von Qenta CEE und daher vertraulich zu behandeln.
     Jegliche Weitergabe an dritte, in welcher Form auch immer, ist unzulaessig.
 
     Software & Service Copyright (C) by
