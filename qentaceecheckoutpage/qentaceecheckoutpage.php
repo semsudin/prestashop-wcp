@@ -2,7 +2,7 @@
 /*
  * Shop System Plugins - Terms of Use
  *
- * The plugins offered are provided free of charge by Qenta Central Eastern Europe GmbH 
+ * The plugins offered are provided free of charge by Qenta Payment CEE GmbH 
  * (abbreviated to Qenta CEE) and are explicitly not part of the Qenta CEE range of 
  * products and services.
  *
@@ -122,7 +122,7 @@ class QentaCEECheckoutPage extends PaymentModule
     {
         $this->name = 'qentaceecheckoutpage';
         $this->tab = 'payments_gateways';
-        $this->version = '1.5.1';
+        $this->version = '1.5.2';
         $this->author = 'Qenta';
         $this->controllers = array('breakoutIFrame', 'confirm', 'payment', 'paymentExecution', 'paymentIFrame');
         $this->is_eu_compatible = 1;

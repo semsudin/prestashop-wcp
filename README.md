@@ -9,7 +9,7 @@
 **IMPORTANT INFORMATION**  
 You are visiting a shop extension which will become obsolete in the near future. It has been replaced by a new one with new features and enhanced functionality.   
 Please use our new shop extension available on [prestashop.wirecard.com](https://prestashop.wirecard.com), which will be maintained, updated and supported on a regular basis.  
-If you have any questions, please contact shop-systems-support@qenta-cee.at
+If you have any questions, please contact support@qenta.com
 
 ----
 
