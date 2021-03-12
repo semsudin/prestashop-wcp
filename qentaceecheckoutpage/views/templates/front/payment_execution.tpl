@@ -1,0 +1,66 @@
+{*
+ * Shop System Plugins - Terms of Use
+ *
+ * The plugins offered are provided free of charge by Qenta Central Eastern Europe GmbH 
+ * (abbreviated to Qenta CEE) and are explicitly not part of the Qenta CEE range of 
+ * products and services.
+ *
+ * They have been tested and approved for full functionality in the standard configuration
+ * (status on delivery) of the corresponding shop system. They are under General Public 
+ * License Version 2 (GPLv2) and can be used, developed and passed on to third parties under
+ * the same terms.
+ *
+ * However, Qenta CEE does not provide any guarantee or accept any liability for any errors
+ * occurring when used in an enhanced, customized shop system configuration.
+ *
+ * Operation in an enhanced, customized configuration is at your own risk and requires a
+ * comprehensive test phase by the user of the plugin.
+ *
+ * Customers use the plugins at their own risk. Qenta CEE does not guarantee their full
+ * functionality neither does Qenta CEE assume liability for any disadvantages related to
+ * the use of the plugins. Additionally, Qenta CEE does not guarantee the full functionality
+ * for customized shop systems or installed plugins of other vendors of plugins within the same
+ * shop system.
+ *
+ * Customers are responsible for testing the plugin's functionality before starting productive
+ * operation.
+ *
+ * By installing the plugin into the shop system the customer agrees to these terms of use.
+ * Please do not use the plugin if you do not agree to these terms of use!
+ *} 
+{capture name=path}
+	<a href="{$link->getPageLink('order', true, NULL, "step=3")|escape:'html':'UTF-8'}" title="{l s='Go back to checkout' mod='qentaceecheckoutpage'}">{l s='Checkout' mod='qentaceecheckoutpage'}</a><span class="navigation-pipe">{$navigationPipe}</span>{l s='Qenta Checkout Page' mod='qentaceecheckoutpage'}
+{/capture}
+
+<h1 class="page-heading">{l s='Order summary' mod='qentaceecheckoutpage'}</h1>
+
+{assign var='current_step' value='payment'}
+{include file="$tpl_dir./order-steps.tpl"}
+
+{if isset($nbProducts) && $nbProducts <= 0}
+	<p class="alert alert-warning">{l s='Your shopping cart is empty.' mod='qentaceecheckoutpage'}</p>
+{else}
+	<form action="{$link->getModuleLink('qentaceecheckoutpage', 'payment', ['paymentType' => $paymentType], true)|escape:'html':'UTF-8'}" method="post">
+		<div class="box">
+			<h3 class="page-subheading">{l s='Qenta Checkout Page payment' mod='qentaceecheckoutpage'}</h3>
+			<p class="">
+				<strong class="dark">
+					{l s='You have chosen to pay with ' mod='qentaceecheckoutpage'}{$paymentName}.
+				</strong>
+			</p>
+			<p>
+				- {l s='Total amount of your order:' mod='qentaceecheckoutpage'}
+				<span id="amount" class="price">{displayPrice price=$total}</span>
+			</p>
+			<p>- {l s='Please confirm your order by clicking "I confirm my order".' mod='qentaceecheckoutpage'}</p>
+		</div>
+		<p class="cart_navigation clearfix" id="cart_navigation">
+			<a href="{$link->getPageLink('order', true, NULL, "step=3")|escape:'html':'UTF-8'}" class="button-exclusive btn btn-default">
+				<i class="icon-chevron-left"></i>{l s='Other payment methods' mod='qentaceecheckoutpage'}
+			</a>
+			<button type="submit" class="button btn btn-default button-medium">
+				<span>{l s='I confirm my order' mod='qentaceecheckoutpage'}<i class="icon-chevron-right right"></i></span>
+			</button>
+		</p>
+	</form>
+{/if}
